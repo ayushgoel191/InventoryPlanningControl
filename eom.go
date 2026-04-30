@@ -513,140 +513,114 @@ func ProcessItemsConcurrently(items []*Item, numWorkers int, useTIP bool, servic
 	return results
 }
 
-// ===== DUMMY DATA GENERATION =====
 
-// GenerateDummyDistribution creates synthetic distribution data
-func GenerateDummyDistribution(mean, stdDev float64, numQuantiles int) *Distribution {
-	dist := &Distribution{
-		Quantiles: make([]float64, numQuantiles),
-		Values:    make([]float64, numQuantiles),
+// LoadDemoItems loads demo items from JSON configuration
+func LoadDemoItems(configPath string) ([]*Item, error) {
+	cfg, err := LoadEOMConfig(configPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load EOM config: %w", err)
 	}
 
-	// Generate quantiles from 2nd to 98th percentile + artificial p100
-	for i := 0; i < numQuantiles; i++ {
-		if i < numQuantiles-1 {
-			percentile := 2.0 + float64(i)*(96.0/float64(numQuantiles-2))
-			dist.Quantiles[i] = percentile
-		} else {
-			// Artificial p100
-			dist.Quantiles[i] = 100.0
+	// Ensure demo_items path is set
+	var demoPath string
+	if demoItems, ok := cfg.DemoItems["data_source"].(string); ok {
+		demoPath = demoItems
+	} else {
+		demoPath = "data/items/demo_items.json"
+	}
+
+	data, err := os.ReadFile(demoPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read demo items file: %w", err)
+	}
+
+	type DemoItemData struct {
+		ASIN             string  `json:"asin"`
+		Description      string  `json:"description"`
+		P                float64 `json:"p"`
+		PPrime           float64 `json:"p_prime"`
+		K                float64 `json:"k"`
+		C                float64 `json:"c"`
+		CPrime           float64 `json:"c_prime"`
+		A                float64 `json:"a"`
+		V                float64 `json:"v"`
+		Lambda           float64 `json:"lambda"`
+		Alpha            float64 `json:"alpha"`
+		H                float64 `json:"h"`
+		HBar             float64 `json:"h_bar"`
+		HPrime           float64 `json:"h_prime"`
+		HHat             float64 `json:"h_hat"`
+		ReviewPeriodDays int     `json:"review_period_days"`
+		CurrentInventory float64 `json:"current_inventory"`
+	}
+
+	var demoItemsData []DemoItemData
+	if err := json.Unmarshal(data, &demoItemsData); err != nil {
+		return nil, fmt.Errorf("failed to parse demo items JSON: %w", err)
+	}
+
+	items := make([]*Item, len(demoItemsData))
+	for i, d := range demoItemsData {
+		item := &Item{
+			ASIN:             d.ASIN,
+			P:                d.P,
+			PPrime:           d.PPrime,
+			K:                d.K,
+			C:                d.C,
+			CPrime:           d.CPrime,
+			A:                d.A,
+			V:                d.V,
+			Lambda:           d.Lambda,
+			Alpha:            d.Alpha,
+			H:                d.H,
+			HBar:             d.HBar,
+			HPrime:           d.HPrime,
+			HHat:             d.HHat,
+			ReviewPeriod:     d.ReviewPeriodDays,
+			CurrentInventory: d.CurrentInventory,
 		}
 
-		// Inverse normal approximation (simplified)
-		z := normalInverse(dist.Quantiles[i] / 100.0)
-		dist.Values[i] = mean + z*stdDev
-		if dist.Values[i] < 0 {
-			dist.Values[i] = 0
+		// Generate placeholder distributions (VLT and demand)
+		// These should ideally be loaded from config or data files in future
+		item.VLTDist = &Distribution{
+			Quantiles: make([]float64, 50),
+			Values:    make([]float64, 50),
 		}
-	}
-
-	return dist
-}
-
-// normalInverse approximates the inverse normal CDF (Acklam's algorithm)
-func normalInverse(p float64) float64 {
-	if p < 0 || p > 1 {
-		return 0
-	}
-	if p < 0.5 {
-		return -normalInverse(1 - p)
-	}
-
-	// Approximation for p >= 0.5
-	a1 := -3.969683028665376e+01
-	a2 := 2.221222899801429e+02
-	a3 := -2.821152023902548e+02
-	a4 := 1.340426573691379e+02
-	a5 := -2.402303233503123e+01
-
-	b1 := -5.447609879822406e+01
-	b2 := 1.615858368580409e+02
-	b3 := -1.556989798598866e+02
-	b4 := 6.680131188771972e+01
-
-	c1 := -7.784894002430293e-03
-	c2 := -3.223671290700182e-01
-	c3 := -2.400758277161838e+00
-	c4 := -2.549732539343734e+00
-
-	d1 := 7.784695709041462e-03
-	d2 := 3.224671290700182e-01
-	d3 := 2.445134137142996e+00
-
-	if p < 0.02425 {
-		q := math.Sqrt(-2.0 * math.Log(p))
-		return -((((c1*q+c2)*q+c3)*q + c4) / ((((d1*q+d2)*q+d3)*q + 1)))
-	}
-
-	if p <= 0.97575 {
-		q := p - 0.5
-		r := q * q
-		return (((((a1*r+a2)*r+a3)*r+a4)*r+a5)*q) / (((((b1*r+b2)*r+b3)*r+b4)*r + 1))
-	}
-
-	q := math.Sqrt(-2.0 * math.Log(1-p))
-	return -((((c1*q+c2)*q+c3)*q + c4) / ((((d1*q+d2)*q+d3)*q + 1)))
-}
-
-// GenerateDummySalvageTable creates synthetic salvage value data
-func GenerateDummySalvageTable(maxWeeks, maxInventory int) map[int]map[int]float64 {
-	table := make(map[int]map[int]float64)
-
-	for week := 0; week <= maxWeeks; week++ {
-		table[week] = make(map[int]float64)
-		for inv := 0; inv <= maxInventory; inv += 100 {
-			// Salvage value decays with time and excess inventory
-			// Formula: base * decay_by_week * (1 - saturation_factor)
-			baseValue := 10.0 * float64(inv)
-			weekDecay := math.Pow(0.95, float64(week))
-			saturationFactor := math.Min(1.0, float64(inv)/1000.0)
-
-			salvageVal := baseValue * weekDecay * (1 - saturationFactor*0.5)
-			table[week][inv] = math.Max(0, salvageVal)
+		for j := 0; j < 50; j++ {
+			item.VLTDist.Quantiles[j] = 2.0 + float64(j)*(96.0/48.0)
+			item.VLTDist.Values[j] = 5.0 + float64(j)*0.4 // Approximate: 5-25 days
 		}
+
+		item.DemandDist = make([]*Distribution, 50)
+		for j := 0; j < 50; j++ {
+			item.DemandDist[j] = &Distribution{
+				Quantiles: make([]float64, 50),
+				Values:    make([]float64, 50),
+			}
+			baseDemand := 400.0 + float64(j)*2.0
+			for k := 0; k < 50; k++ {
+				item.DemandDist[j].Quantiles[k] = 2.0 + float64(k)*(96.0/48.0)
+				item.DemandDist[j].Values[k] = baseDemand + float64(k)*10.0
+			}
+		}
+
+		// Generate salvage table
+		item.SalvageTable = make(map[int]map[int]float64)
+		for week := 0; week <= 20; week++ {
+			item.SalvageTable[week] = make(map[int]float64)
+			for inv := 0; inv <= 10000; inv += 100 {
+				baseValue := 10.0 * float64(inv)
+				weekDecay := math.Pow(0.95, float64(week))
+				saturationFactor := math.Min(1.0, float64(inv)/1000.0)
+				salvageVal := baseValue * weekDecay * (1 - saturationFactor*0.5)
+				item.SalvageTable[week][inv] = math.Max(0, salvageVal)
+			}
+		}
+
+		items[i] = item
 	}
 
-	return table
-}
-
-// GenerateDummyItem creates a sample item for testing
-func GenerateDummyItem(asin string, seed int) *Item {
-	item := &Item{
-		ASIN:             asin,
-		P:                19.99,   // Sales price
-		PPrime:           -3.77,   // CP on sale
-		K:                4.0,     // Lost sale penalty
-		C:                14.99,   // Cost
-		CPrime:           2.13,    // CP on receipt
-		A:                0.0,     // Arrival cost
-		V:                0.0635,  // Volume
-		Lambda:           0.87,    // CIV
-		Alpha:            1.0,     // CIV scale
-		H:                0.08,    // Yearly cost of capital
-		HBar:             0.015,   // Unit penalty
-		HPrime:           0.0,     // Volume penalty
-		HHat:             1.0,     // Value penalty
-		ReviewPeriod:     7,       // 7 days
-		CurrentInventory: 500,
-	}
-
-	// Generate VLT distribution (mean 12 days, std 5 days)
-	item.VLTDist = GenerateDummyDistribution(12, 5, 50)
-
-	// Generate demand distributions for each VLT scenario
-	item.DemandDist = make([]*Distribution, 50)
-	for i := 0; i < 50; i++ {
-		vltDays := item.VLTDist.Values[i]
-		// Demand scales with planning horizon
-		demandMean := 500.0 * (vltDays / 7.0)
-		demandStd := 100.0 * math.Sqrt(vltDays / 7.0)
-		item.DemandDist[i] = GenerateDummyDistribution(demandMean, demandStd, 50)
-	}
-
-	// Generate salvage table
-	item.SalvageTable = GenerateDummySalvageTable(20, 10000)
-
-	return item
+	return items, nil
 }
 
 // ===== MAIN =====
@@ -656,14 +630,14 @@ func main() {
 	fmt.Println("ECONOMIC ORDERING MODEL (EOM) - Multi-Item Optimization")
 	fmt.Println(strings.Repeat("=", 80))
 
-	// Generate dummy items
-	numItems := 10
-	items := make([]*Item, numItems)
-	for i := 0; i < numItems; i++ {
-		items[i] = GenerateDummyItem(fmt.Sprintf("ASIN-%06d", i+1), i)
+	// Load demo items from configuration
+	items, err := LoadDemoItems("config/eom_config.json")
+	if err != nil {
+		fmt.Printf("Error loading demo items: %v\n", err)
+		return
 	}
 
-	fmt.Printf("\nGenerated %d items for optimization\n", numItems)
+	fmt.Printf("\nLoaded %d items for optimization\n", len(items))
 	fmt.Println("\n" + strings.Repeat("=", 80))
 	fmt.Println("METHOD 1: EOM-TIP (Target Inventory Position - Optimal Profit)")
 	fmt.Println(strings.Repeat("=", 80))

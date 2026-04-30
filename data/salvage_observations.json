@@ -1,0 +1,20 @@
+{
+  "demo_observations": [
+    {"asin": "ASIN-001-MILK", "category": "Dairy", "week": 1, "markdown_fraction": 0.10, "baseline_demand": 100.0, "observed_demand": 105.0},
+    {"asin": "ASIN-001-MILK", "category": "Dairy", "week": 2, "markdown_fraction": 0.15, "baseline_demand": 100.0, "observed_demand": 110.0},
+    {"asin": "ASIN-001-MILK", "category": "Dairy", "week": 3, "markdown_fraction": 0.10, "baseline_demand": 100.0, "observed_demand": 108.0},
+    {"asin": "ASIN-001-MILK", "category": "Dairy", "week": 4, "markdown_fraction": 0.20, "baseline_demand": 100.0, "observed_demand": 118.0},
+    {"asin": "ASIN-001-MILK", "category": "Dairy", "week": 5, "markdown_fraction": 0.25, "baseline_demand": 100.0, "observed_demand": 125.0},
+    {"asin": "ASIN-001-MILK", "category": "Dairy", "week": 6, "markdown_fraction": 0.15, "baseline_demand": 100.0, "observed_demand": 112.0},
+    {"asin": "ASIN-001-MILK", "category": "Dairy", "week": 7, "markdown_fraction": 0.20, "baseline_demand": 100.0, "observed_demand": 122.0},
+    {"asin": "ASIN-001-MILK", "category": "Dairy", "week": 8, "markdown_fraction": 0.10, "baseline_demand": 100.0, "observed_demand": 107.0},
+    {"asin": "ASIN-001-MILK", "category": "Dairy", "week": 9, "markdown_fraction": 0.25, "baseline_demand": 100.0, "observed_demand": 128.0},
+    {"asin": "ASIN-001-MILK", "category": "Dairy", "week": 10, "markdown_fraction": 0.30, "baseline_demand": 100.0, "observed_demand": 135.0}
+  ],
+  "demo_salvage_table_input": {
+    "asin": "ASIN-001-MILK",
+    "price": 3.50,
+    "cost": 1.50,
+    "weekly_demand": 100.0
+  }
+}

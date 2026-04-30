@@ -2,10 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"math"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -108,9 +106,12 @@ type ElasticityLearner struct {
 	SigmaNoise float64
 }
 
-// NewElasticityLearner creates a new learner
-func NewElasticityLearner() *ElasticityLearner {
-	return &ElasticityLearner{SigmaNoise: 0.30}
+// NewElasticityLearner creates a new learner with sigma noise from loaded config
+func NewElasticityLearner(sigmaNoise float64) *ElasticityLearner {
+	if sigmaNoise <= 0 {
+		sigmaNoise = 0.30 // fallback default
+	}
+	return &ElasticityLearner{SigmaNoise: sigmaNoise}
 }
 
 // InitializeBelief creates prior belief from category
@@ -284,97 +285,3 @@ func (sg *SalvageGenerator) GenerateSalvageTable(
 	}
 }
 
-// Uncomment below to run demo with: go run salvage_estimator.go
-// func main() {
-// 	demoSalvage()
-// }
-
-// demoSalvage demonstrates salvage estimation
-func demoSalvage() {
-	learner := NewElasticityLearner()
-
-	// Initialize belief
-	belief := learner.InitializeBelief("ASIN-001-MILK", "Dairy")
-	fmt.Println("\nInitial belief for Dairy item:")
-	fmt.Printf("  Category prior: epsilon = -0.6\n")
-	fmt.Printf("  mu_log_epsilon = %.4f\n", belief.MuLogElasticity)
-	fmt.Printf("  precision tau = %.2f\n", belief.TauLogElasticity)
-	fmt.Printf("  Estimated epsilon: %.2f\n\n", -math.Exp(belief.MuLogElasticity))
-
-	// Simulate observations
-	fmt.Println(strings.Repeat("-", 100))
-	fmt.Println("Simulated markdown observations (true epsilon = -1.0):")
-	fmt.Println(strings.Repeat("-", 100))
-	fmt.Printf("%-4s %-12s %-12s %-12s %-12s %-12s\n", "Obs", "Markdown", "Baseline", "Observed", "Updated ε", "Confidence")
-	fmt.Println(strings.Repeat("-", 100))
-
-	observations := []struct {
-		markdown float64
-		baseline float64
-		observed float64
-	}{
-		{0.10, 100.0, 105.0},
-		{0.15, 100.0, 110.0},
-		{0.10, 100.0, 108.0},
-		{0.20, 100.0, 118.0},
-		{0.25, 100.0, 125.0},
-		{0.15, 100.0, 112.0},
-		{0.20, 100.0, 122.0},
-		{0.10, 100.0, 107.0},
-		{0.25, 100.0, 128.0},
-		{0.30, 100.0, 135.0},
-	}
-
-	for i, obs := range observations {
-		markdownObs := &MarkdownObservation{
-			ASIN:              "ASIN-001-MILK",
-			WeekOfYear:        i + 1,
-			MarkdownFraction:  obs.markdown,
-			BaselineDemand:    obs.baseline,
-			ObservedDemand:    obs.observed,
-			Timestamp:         time.Now(),
-		}
-		belief = learner.UpdateBelief(belief, markdownObs)
-		epsilonEst := -math.Exp(belief.MuLogElasticity)
-		confidenceVal := 1.0 / math.Sqrt(belief.TauLogElasticity)
-
-		fmt.Printf("%-4d %10.0f%% %10.0f %10.0f %10.2f %10.3f\n",
-			i+1, obs.markdown*100, obs.baseline, obs.observed, epsilonEst, confidenceVal)
-	}
-
-	fmt.Printf("\n%s\n", strings.Repeat("=", 100))
-	fmt.Println("Final Bayesian estimate:")
-	epsilonFinal := -math.Exp(belief.MuLogElasticity)
-	stdErr := 1.0 / math.Sqrt(belief.TauLogElasticity)
-	fmt.Printf("  Learned elasticity: %.2f\n", epsilonFinal)
-	fmt.Printf("  Standard error: %.4f\n", stdErr)
-	fmt.Printf("  Observations: %d\n", belief.NObservations)
-
-	// Generate salvage table
-	fmt.Printf("\n%s\n", strings.Repeat("=", 100))
-	fmt.Println("SALVAGE TABLE GENERATION")
-	fmt.Printf("%s\n\n", strings.Repeat("=", 100))
-
-	generator := NewSalvageGenerator(nil)
-	salvageEst := generator.GenerateSalvageTable("ASIN-001-MILK", 3.50, 1.50, 100.0, belief)
-
-	fmt.Println("Generated salvage table for milk item:")
-	fmt.Println("  Price: $3.50, Cost: $1.50, Weekly demand: 100 units")
-	fmt.Printf("  Elasticity estimate: %.2f\n", salvageEst.ElasticityPointEstimate)
-	fmt.Printf("  Based on %d observations\n\n", salvageEst.BasedOnNObs)
-
-	fmt.Println("Sample salvage values:")
-	fmt.Println(strings.Repeat("-", 70))
-	fmt.Printf("%-8s %-20s %-15s\n", "Week", "Inventory Level", "Salvage Value")
-	fmt.Println(strings.Repeat("-", 70))
-
-	for _, week := range []int{0, 5, 10, 15, 20} {
-		if weekTable, ok := salvageEst.SalvageTable[week]; ok {
-			for _, invLevel := range []int{100, 500, 1000, 2000} {
-				if val, ok := weekTable[invLevel]; ok {
-					fmt.Printf("%-8d %-20d $%13.2f\n", week, invLevel, val)
-				}
-			}
-		}
-	}
-}
