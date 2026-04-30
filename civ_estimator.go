@@ -279,6 +279,7 @@ func demoCIV() {
 `)
 }
 
-func main() {
-	demoCIV()
-}
+// Uncomment below to run demo with: go run civ_estimator.go
+// func main() {
+// 	demoCIV()
+// }

@@ -269,9 +269,10 @@ func (sg *SalvageGenerator) GenerateSalvageTable(
 	}
 }
 
-func main() {
-	demoSalvage()
-}
+// Uncomment below to run demo with: go run salvage_estimator.go
+// func main() {
+// 	demoSalvage()
+// }
 
 // demoSalvage demonstrates salvage estimation
 func demoSalvage() {

@@ -256,9 +256,7 @@ func (item *Item) ComputeCumulativeDistributionAtY(y float64) float64 {
 	totalProb := 0.0
 	count := 0.0
 
-	for vltIdx, vltVal := range item.VLTDist.Values {
-		leadDays := int(vltVal)
-
+	for vltIdx := range item.VLTDist.Values {
 		if vltIdx < len(item.DemandDist) {
 			// Compute F_L(y) = P(D_L <= y)
 			demandLessOrEqual := 0.0
@@ -337,7 +335,7 @@ func (eom *EOMActor) SolveEOMTIP(item *Item) *EOAResult {
 	right := 10000.0
 
 	// Find bounds where gradient changes sign
-	gradLeft := item.ComputeGradientForTIP(left)
+	_ = item.ComputeGradientForTIP(left)  // Left boundary check
 	gradRight := item.ComputeGradientForTIP(right)
 
 	// Expand right if necessary
@@ -562,7 +560,7 @@ func normalInverse(p float64) float64 {
 	}
 
 	q := math.Sqrt(-2.0 * math.Log(1-p))
-	return (((((c1*q+c2)*q+c3)*q + c4) / ((((d1*q+d2)*q+d3)*q + 1)))
+	return -((((c1*q+c2)*q+c3)*q + c4) / ((((d1*q+d2)*q+d3)*q + 1)))
 }
 
 // GenerateDummySalvageTable creates synthetic salvage value data
