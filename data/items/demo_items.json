@@ -1,0 +1,42 @@
+[
+  {
+    "index": 1,
+    "description": "Sample Item 1 (base case for testing)"
+  },
+  {
+    "index": 2,
+    "description": "Sample Item 2 (high demand)"
+  },
+  {
+    "index": 3,
+    "description": "Sample Item 3 (seasonal)"
+  },
+  {
+    "index": 4,
+    "description": "Sample Item 4 (low margin)"
+  },
+  {
+    "index": 5,
+    "description": "Sample Item 5 (high salvage)"
+  },
+  {
+    "index": 6,
+    "description": "Sample Item 6 (perishable)"
+  },
+  {
+    "index": 7,
+    "description": "Sample Item 7 (bulky)"
+  },
+  {
+    "index": 8,
+    "description": "Sample Item 8 (fast moving)"
+  },
+  {
+    "index": 9,
+    "description": "Sample Item 9 (slow moving)"
+  },
+  {
+    "index": 10,
+    "description": "Sample Item 10 (commodity)"
+  }
+]

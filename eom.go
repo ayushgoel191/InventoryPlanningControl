@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
+	"os"
 	"strings"
 	"sync"
 )
@@ -76,8 +78,31 @@ type BisectionConfig struct {
 func DefaultBisectionConfig() BisectionConfig {
 	return BisectionConfig{
 		MaxIterations: 100,
-		Tolerance:     1.0, // $1 tolerance
+		Tolerance:     1.0,
 	}
+}
+
+// EOMMappingConfig holds all configurable parameters for EOM
+type EOMMappingConfig struct {
+	ItemParameters             map[string]interface{} `json:"item_parameters"`
+	DistributionParameters     map[string]interface{} `json:"distribution_parameters"`
+	SalvageTableParameters     map[string]interface{} `json:"salvage_table_parameters"`
+	BisectionParameters        map[string]interface{} `json:"bisection_parameters"`
+	DemoItems                  map[string]interface{} `json:"demo_items"`
+}
+
+// LoadEOMConfig loads EOM configuration from JSON file
+func LoadEOMConfig(path string) (*EOMMappingConfig, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var cfg EOMMappingConfig
+	if err := json.Unmarshal(data, &cfg); err != nil {
+		return nil, err
+	}
+	return &cfg, nil
 }
 
 // CalculateUndarageCost computes cu = p + p' + k - (c - c') + α*Λ - a

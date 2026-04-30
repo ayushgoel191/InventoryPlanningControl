@@ -1,0 +1,10 @@
+[
+  {"session_id": "D001", "basket_asins": ["ASIN-002-EGGS", "ASIN-004-BREAD"], "oos_item": "ASIN-001-MILK", "timestamp": "2026-01-10T08:00:00Z"},
+  {"session_id": "D002", "basket_asins": ["ASIN-004-BREAD"], "oos_item": "ASIN-001-MILK", "timestamp": "2026-01-14T09:30:00Z"},
+  {"session_id": "D003", "basket_asins": ["ASIN-001-MILK", "ASIN-004-BREAD"], "oos_item": "ASIN-002-EGGS", "timestamp": "2026-01-15T10:00:00Z"},
+  {"session_id": "D004", "basket_asins": ["ASIN-003-BUTTER"], "oos_item": "ASIN-001-MILK", "timestamp": "2026-01-21T11:00:00Z"},
+  {"session_id": "D005", "basket_asins": ["ASIN-009-SPICE"], "oos_item": "ASIN-005-OIL", "timestamp": "2026-01-22T14:00:00Z"},
+  {"session_id": "D006", "basket_asins": [], "oos_item": "ASIN-007-TOWELS", "timestamp": "2026-01-28T16:00:00Z"},
+  {"session_id": "D007", "basket_asins": ["ASIN-006-FLOUR"], "oos_item": "ASIN-005-OIL", "timestamp": "2026-02-04T09:00:00Z"},
+  {"session_id": "D008", "basket_asins": ["ASIN-001-MILK", "ASIN-002-EGGS"], "oos_item": "ASIN-004-BREAD", "timestamp": "2026-02-05T10:00:00Z"}
+]

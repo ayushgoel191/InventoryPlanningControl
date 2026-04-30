@@ -47,17 +47,11 @@ jobs:
       with:
         go-version: ${{ matrix.go-version }}
 
-    - name: Build CIV estimator
-      run: go build -o civ_estimator civ_estimator.go
+    - name: Build all Go packages
+      run: go build -v -o InventoryPlanningControl ./...
 
-    - name: Build Salvage estimator
-      run: go build -o salvage_estimator salvage_estimator.go
-
-    - name: Run CIV estimator
-      run: ./civ_estimator > /dev/null
-
-    - name: Run Salvage estimator
-      run: ./salvage_estimator > /dev/null
+    - name: Run main binary
+      run: ./InventoryPlanningControl > /dev/null
 
   lint:
     runs-on: ubuntu-latest

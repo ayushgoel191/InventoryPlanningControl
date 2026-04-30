@@ -1,0 +1,43 @@
+{
+  "item_parameters": {
+    "sales_price": 19.99,
+    "cp_on_sale": -3.77,
+    "lost_sale_penalty": 4.0,
+    "cost": 14.99,
+    "cp_on_receipt": 2.13,
+    "arrival_cost": 0.0,
+    "volume": 0.0635,
+    "civ_default": 0.87,
+    "civ_scale": 1.0,
+    "yearly_cost_of_capital": 0.08,
+    "unit_penalty": 0.015,
+    "volume_penalty": 0.0,
+    "value_penalty": 1.0,
+    "review_period_days": 7,
+    "initial_inventory": 500
+  },
+  "distribution_parameters": {
+    "vlt_mean_days": 12,
+    "vlt_std_days": 5,
+    "vlt_quantiles": 50,
+    "demand_mean_multiplier": 500.0,
+    "demand_std_multiplier": 100.0,
+    "demand_quantiles": 50
+  },
+  "salvage_table_parameters": {
+    "max_weeks": 20,
+    "max_inventory": 10000,
+    "base_value_multiplier": 10.0,
+    "week_decay_rate": 0.95,
+    "saturation_threshold": 1000.0,
+    "saturation_multiplier": 0.5
+  },
+  "bisection_parameters": {
+    "tolerance": 1.0,
+    "max_iterations": 1000
+  },
+  "demo_items": {
+    "count": 10,
+    "data_source": "data/items/demo_items.json"
+  }
+}

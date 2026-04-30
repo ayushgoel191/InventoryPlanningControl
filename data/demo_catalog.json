@@ -1,0 +1,12 @@
+[
+  {"asin": "ASIN-001-MILK", "category": "Dairy", "subcategory": "milk", "weekly_velocity_units": 120.0, "demand_cv": 0.08, "price": 3.50},
+  {"asin": "ASIN-002-EGGS", "category": "Dairy", "subcategory": "eggs", "weekly_velocity_units": 95.0, "demand_cv": 0.10, "price": 4.20},
+  {"asin": "ASIN-003-BUTTER", "category": "Dairy", "subcategory": "butter", "weekly_velocity_units": 60.0, "demand_cv": 0.09, "price": 5.00},
+  {"asin": "ASIN-004-BREAD", "category": "Pantry", "subcategory": "bread", "weekly_velocity_units": 85.0, "demand_cv": 0.15, "price": 2.50},
+  {"asin": "ASIN-005-OIL", "category": "Pantry", "subcategory": "oil", "weekly_velocity_units": 40.0, "demand_cv": 0.12, "price": 8.00},
+  {"asin": "ASIN-006-FLOUR", "category": "Pantry", "subcategory": "flour", "weekly_velocity_units": 35.0, "demand_cv": 0.14, "price": 3.00},
+  {"asin": "ASIN-007-TOWELS", "category": "Household", "subcategory": "paper_towels", "weekly_velocity_units": 70.0, "demand_cv": 0.20, "price": 12.00},
+  {"asin": "ASIN-008-SALT", "category": "Pantry", "subcategory": "salt", "weekly_velocity_units": 15.0, "demand_cv": 0.25, "price": 2.00},
+  {"asin": "ASIN-009-SPICE", "category": "Pantry", "subcategory": "spice", "weekly_velocity_units": 5.0, "demand_cv": 0.40, "price": 6.00},
+  {"asin": "ASIN-010-CANDY", "category": "Snacks", "subcategory": "candy", "weekly_velocity_units": 20.0, "demand_cv": 0.35, "price": 1.50}
+]

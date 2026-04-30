@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
+	"os"
 	"strings"
 	"time"
 )
@@ -53,6 +55,41 @@ func DefaultSalvageTableConfig() *SalvageTableConfig {
 	}
 }
 
+// LoadSalvageConfig loads salvage configuration from JSON file
+func LoadSalvageConfig(path string) (*SalvageTableConfig, map[string]float64, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var rawConfig map[string]interface{}
+	if err := json.Unmarshal(data, &rawConfig); err != nil {
+		return nil, nil, err
+	}
+
+	// Extract salvage table config
+	salvageTableData := rawConfig["salvage_table_config"].(map[string]interface{})
+	cfg := &SalvageTableConfig{
+		MaxWeeks:      20,
+		MaxInventory:  10000,
+		InventoryStep: 100,
+		ScrapFraction: salvageTableData["scrap_fraction"].(float64),
+		SigmaNoise:    salvageTableData["sigma_noise"].(float64),
+		MarkdownMin:   salvageTableData["markdown_min"].(float64),
+		MarkdownMax:   salvageTableData["markdown_max"].(float64),
+		UrgencyScale:  salvageTableData["urgency_scale"].(float64),
+	}
+
+	// Extract category elasticity priors
+	elasticityData := rawConfig["category_elasticity_priors"].(map[string]interface{})
+	elasticities := make(map[string]float64)
+	for cat, val := range elasticityData {
+		elasticities[cat] = val.(float64)
+	}
+
+	return cfg, elasticities, nil
+}
+
 // SalvageEstimate represents output: salvage table and elasticity
 type SalvageEstimate struct {
 	ASIN                    string
@@ -63,30 +100,8 @@ type SalvageEstimate struct {
 	BasedOnNObs             int
 }
 
-// Category elasticity priors (from retail economics literature)
-var CategoryElasticityPriors = map[string]float64{
-	"dairy":              -0.6,
-	"milk":               -0.6,
-	"eggs":               -0.65,
-	"butter":             -0.70,
-	"packaged_food":      -0.80,
-	"pantry_staples":     -0.85,
-	"oil":                -0.85,
-	"flour":              -0.80,
-	"household_staples":  -1.20,
-	"paper_towels":       -1.20,
-	"beverages":          -1.00,
-	"water":              -1.50,
-	"juice":              -0.95,
-	"personal_care":      -1.50,
-	"shampoo":            -1.50,
-	"toothpaste":         -1.40,
-	"snacks":             -1.80,
-	"candy":              -2.00,
-	"specialty":          -2.00,
-	"seasonal":           -2.50,
-	"discretionary":      -3.00,
-}
+// CategoryElasticityPriors is loaded from config at runtime (no hardcoded values)
+var CategoryElasticityPriors map[string]float64
 
 // ElasticityLearner updates elasticity beliefs from observations
 type ElasticityLearner struct {

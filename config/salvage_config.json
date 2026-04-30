@@ -1,0 +1,37 @@
+{
+  "salvage_table_config": {
+    "scrap_fraction": 0.05,
+    "sigma_noise": 0.30,
+    "markdown_min": 0.05,
+    "markdown_max": 0.50,
+    "urgency_scale": 1.5
+  },
+  "elasticity_learning": {
+    "sigma_noise": 0.30,
+    "epsilon_prior": -1.0,
+    "tau0_prior_precision": 4.0
+  },
+  "category_elasticity_priors": {
+    "dairy": -0.6,
+    "milk": -0.6,
+    "eggs": -0.65,
+    "butter": -0.70,
+    "packaged_food": -0.80,
+    "pantry_staples": -0.85,
+    "oil": -0.85,
+    "flour": -0.80,
+    "household_staples": -1.20,
+    "paper_towels": -1.20,
+    "beverages": -1.00,
+    "water": -1.50,
+    "juice": -0.95,
+    "personal_care": -1.50,
+    "shampoo": -1.50,
+    "toothpaste": -1.40,
+    "snacks": -1.80,
+    "candy": -2.00,
+    "specialty": -2.00,
+    "seasonal": -2.50,
+    "discretionary": -3.00
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "lambda_min": 0.10,
+  "lambda_max": 3.00,
+  "weight_velocity": 0.35,
+  "weight_stability": 0.25,
+  "weight_essentiality": 0.40,
+  "fallback_lambda": 0.87,
+  "data_source": {
+    "type": "file",
+    "checkout_events_path": "data/events/checkout_events.json",
+    "dropout_events_path": "data/events/dropout_events.json",
+    "api_endpoint": "",
+    "api_token": ""
+  },
+  "fallback_thresholds": {
+    "confidence_threshold": 0.33,
+    "default_stability_score": 0.80,
+    "default_essentiality_score": 0.45,
+    "default_p90_velocity": 50.0,
+    "min_cooccurrence_support": 2
+  }
+}
+
