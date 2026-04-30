@@ -17,6 +17,9 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
     - name: Test Python compilation
       run: |
         python -m py_compile civ_estimator.py salvage_estimator.py item_factory.py test_factory_integration.py
